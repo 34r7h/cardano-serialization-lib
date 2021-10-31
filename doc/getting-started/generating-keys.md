@@ -1,8 +1,8 @@
 # Generating Keys and Addresses
 
-## BIP32 Keys
+## Bip32 Keys
 
-There are two main categories of keys in this library. There are the raw `PublicKey` and `PrivateKey` which are used for cryptographically signing/verifying, and `BIP32PrivateKey`/`BIP32PublicKey` which in addition to this have the ability to derive additional keys from them following the [BIP32 derivation scheme](https://en.bitcoin.it/wiki/BIP_0032) variant called BIP32-Ed25519, which will be referred to as BIP32 for brevity. We use the [BIP44 spec](https://en.bitcoin.it/wiki/BIP_0044) variant for Ed25519 as well for the derivation paths using 1852 or 44 as the purpose consant and 1815 for the coin type depending on address type. See [this doc](https://github.com/input-output-hk/implementation-decisions/pull/18) for more details.
+There are two main categories of keys in this library. There are the raw `PublicKey` and `PrivateKey` which are used for cryptographically signing/verifying, and `Bip32PrivateKey`/`Bip32PublicKey` which in addition to this have the ability to derive additional keys from them following the [Bip32 derivation scheme](https://en.bitcoin.it/wiki/Bip_0032) variant called Bip32-Ed25519, which will be referred to as Bip32 for brevity. We use the [Bip44 spec](https://en.bitcoin.it/wiki/Bip_0044) variant for Ed25519 as well for the derivation paths using 1852 or 44 as the purpose consant and 1815 for the coin type depending on address type. See [this doc](https://github.com/input-output-hk/implementation-decisions/pull/18) for more details.
 
 This is demonstrated with the below code
 ```javascript
@@ -11,7 +11,7 @@ function harden(num: number): number {
 }
 
 
-const rootKey = CardanoWasm.BIP32PrivateKey.from_bech32("xprv17qx9vxm6060qjn5fgazfue9nwyf448w7upk60c3epln82vumg9r9kxzsud9uv5rfscxp382j2aku254zj3qfx9fx39t6hjwtmwq85uunsd8x0st3j66lzf5yn30hwq5n75zeuplepx8vxc502txx09ygjgx06n0p");
+const rootKey = CardanoWasm.Bip32PrivateKey.from_bech32("xprv17qx9vxm6060qjn5fgazfue9nwyf448w7upk60c3epln82vumg9r9kxzsud9uv5rfscxp382j2aku254zj3qfx9fx39t6hjwtmwq85uunsd8x0st3j66lzf5yn30hwq5n75zeuplepx8vxc502txx09ygjgx06n0p");
 const accountKey = rootKey
   .derive(harden(1852)) // purpose
   .derive(harden(1815)) // coin type
@@ -28,9 +28,9 @@ const stakeKey = accountKey
   .to_public();
 ```
 
-## BIP39 Entropy
+## Bip39 Entropy
 
-To generate a `BIP32PrivateKey` from a BIP39 recovery phrase it must be first converted to entropy following the [BIP39 protocol](). This library does not directly handle that, but once entropy is created it is possible to use `Bip32PrivateKey.from_bip39_entropy(entropy, password)`. For more information see the [CIP3](https://github.com/cardano-foundation/CIPs/pull/3) Cardano improvement proposal. The code below uses the `bip39` npm package to generate a root `BIP32PrivateKey` from a BIP39 mnemonic.
+To generate a `Bip32PrivateKey` from a Bip39 recovery phrase it must be first converted to entropy following the [Bip39 protocol](). This library does not directly handle that, but once entropy is created it is possible to use `Bip32PrivateKey.from_bip39_entropy(entropy, password)`. For more information see the [CIP3](https://github.com/cardano-foundation/CIPs/pull/3) Cardano improvement proposal. The code below uses the `bip39` npm package to generate a root `Bip32PrivateKey` from a Bip39 mnemonic.
 
 ```javascript
 import { mnemonicToEntropy } from 'bip39';
@@ -47,7 +47,7 @@ const rootKey = CardanoWasm.Bip32PrivateKey.from_bip39_entropy(
 
 ## Use in Addresses
 
-Once we have reached the desired derivation path, we must convert the `BIP32PrivateKey` or `BIP32PublicKey` to a `PrivateKey` or `PublicKey` by calling `.to_raw_key()` on them with the exception of Byron addresses.
+Once we have reached the desired derivation path, we must convert the `Bip32PrivateKey` or `Bip32PublicKey` to a `PrivateKey` or `PublicKey` by calling `.to_raw_key()` on them with the exception of Byron addresses.
 For example, to create an address using the `utxoPubKey` and `stakeKey` in the first example, we can do:
 ```javascript
 // base address with staking key
@@ -104,12 +104,12 @@ const addr = CardanoWasm.Address.from_bech32("addr1vyt3w9chzut3w9chzut3w9chzut3w
 
 ## Other Key Types
 
-Conversion between `cardano-cli` 128-byte `XPrv` keys and `BIP32PrivateKey` is also supported:
+Conversion between `cardano-cli` 128-byte `XPrv` keys and `Bip32PrivateKey` is also supported:
 ```javascript
-const bip32PrivateKey = CardanoWasm.BIP32PrivateKey.from_128_xprv(xprvBytes);
-assert(xprvBytes == CardanoWasm.BIP32PrivateKey.to_128_xprv());
+const bip32PrivateKey = CardanoWasm.Bip32PrivateKey.from_128_xprv(xprvBytes);
+assert(xprvBytes == CardanoWasm.Bip32PrivateKey.to_128_xprv());
 ```
-96-byte `XPrv` keys are identical to `BIP32PrivateKey`s byte-wise and no conversion is needed.
+96-byte `XPrv` keys are identical to `Bip32PrivateKey`s byte-wise and no conversion is needed.
 For more details see [this document](https://docs.cardano.org/projects/cardano-node/en/latest/stake-pool-operations/keys_and_addresses.html) regarding legacy keys.
 
 There is also `LegacyDaedalusPrivateKey` which is used for creating witnesses for legacy Daedalus `Dd`-type addresses.
